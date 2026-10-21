@@ -1,176 +1,141 @@
 import Link from "next/link";
 import {
-  Activity,
-  ArrowRight,
-  ArrowUpRight,
-  ChartNoAxesCombined,
-  CircleCheck,
-  Database,
-  Layers3,
-  LockKeyhole,
-  Search,
-  ShieldCheck,
-  Wallet,
+  Activity, ArrowRight, ArrowUpRight, CircleCheck, Clock3,
+  Layers3, RadioTower, ShieldCheck, Star, Wallet,
 } from "lucide-react";
+import { AssetTable } from "@/components/asset-table";
+import { ChartPanel } from "@/components/chart-panel";
+import { DataState } from "@/components/data-state";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const features = [
-  {
-    icon: Search,
-    title: "Explore markets",
-    description: "Find assets and compare prices, volume and market capitalization once a verified provider is connected.",
-    tag: "Market intelligence",
-  },
-  {
-    icon: ChartNoAxesCombined,
-    title: "Understand the chart",
-    description: "Historical price movements with explicit timestamps, quote currencies and transparent data provenance.",
-    tag: "Price history",
-  },
-  {
-    icon: Wallet,
-    title: "Track your portfolio",
-    description: "Record trades manually and understand allocations, holdings and cost basis without custody.",
-    tag: "Portfolio accounting",
-  },
-  {
-    icon: Layers3,
-    title: "Follow a watchlist",
-    description: "Save interesting assets and revisit them in one organized place once accounts are available.",
-    tag: "Personal workspace",
-  },
+const metrics = [
+  { title: "Market capitalization", subtitle: "Global crypto market", icon: Layers3 },
+  { title: "24h trading volume", subtitle: "Aggregated USD volume", icon: Activity },
+  { title: "Portfolio value", subtitle: "Your recorded holdings", icon: Wallet },
+  { title: "Watchlist assets", subtitle: "Saved to your account", icon: Star },
 ] as const;
 
-const principles = [
-  "No invented or unlabeled market prices",
-  "Server-side provider access and rate-limit handling",
-  "Non-custodial by design",
-  "Decimal-safe portfolio calculations",
-] as const;
-
-export default function HomePage() {
+export default function OverviewPage() {
   return (
-    <>
-      <section className="relative isolate overflow-hidden border-b border-line/70">
-        <div className="pointer-events-none absolute -right-56 -top-60 -z-10 h-[640px] w-[640px] rounded-full bg-accent/8 blur-[130px]" aria-hidden="true" />
-        <div className="mx-auto grid max-w-7xl gap-14 px-5 pb-24 pt-20 sm:px-8 md:pt-28 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:gap-16 lg:pb-32">
-          <div>
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/8 px-3 py-2 text-xs font-semibold tracking-wide text-accent">
-              <span className="h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-              GROUP 01 · FOUNDATION
-            </div>
-            <h1 className="max-w-2xl text-5xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
-              Crypto, without <span className="text-accent">the noise.</span>
-            </h1>
-            <p className="mt-7 max-w-xl text-base leading-8 text-muted sm:text-lg">
-              An open, non-custodial workspace for understanding cryptocurrency markets and keeping your portfolio in focus. Built with trust, clarity and reliable data in mind.
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link href="/markets" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-sm font-semibold text-accent-foreground transition hover:bg-[#8cf1d7]">
-                Explore markets <ArrowRight size={17} aria-hidden="true" />
-              </Link>
-              <Link href="#roadmap" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-panel px-5 text-sm font-semibold transition hover:border-accent/60">
-                View roadmap <ArrowUpRight size={16} aria-hidden="true" />
-              </Link>
-            </div>
-            <p className="mt-6 text-xs leading-6 text-muted">Development preview · Live prices, accounts and real-money trading are not enabled.</p>
+    <div className="space-y-8">
+      <section className="flex flex-wrap items-start justify-between gap-6">
+        <div>
+          <div className="mb-3 flex flex-wrap items-center gap-3">
+            <Badge variant="default"><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" /> Group 2 · UI preview</Badge>
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Clock3 size={14} aria-hidden="true" /> Market feed not connected</span>
           </div>
-          <div className="rounded-3xl border border-line bg-panel p-5 shadow-[0_32px_90px_-55px_#000] sm:p-7" aria-label="Application status preview">
-            <div className="mb-7 flex items-center justify-between border-b border-line pb-5">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted">Workspace</p>
-                <h2 className="mt-1 text-xl font-semibold tracking-tight">System readiness</h2>
-              </div>
-              <span className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent">Initial setup</span>
-            </div>
-            <div className="mb-6 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-line bg-background/60 p-4">
-                <Database size={21} className="mb-4 text-accent" aria-hidden="true" />
-                <p className="text-xs text-muted">Market data</p>
-                <p className="mt-1 text-base font-semibold">Not connected</p>
-              </div>
-              <div className="rounded-2xl border border-line bg-background/60 p-4">
-                <LockKeyhole size={21} className="mb-4 text-accent" aria-hidden="true" />
-                <p className="text-xs text-muted">User accounts</p>
-                <p className="mt-1 text-base font-semibold">Not enabled</p>
-              </div>
-            </div>
-            <div className="rounded-2xl border border-dashed border-line bg-background/35 px-5 py-12 text-center">
-              <Activity size={30} className="mx-auto mb-4 text-muted" strokeWidth={1.4} aria-hidden="true" />
-              <p className="text-sm font-semibold">Waiting for the first data source</p>
-              <p className="mx-auto mt-2 max-w-xs text-xs leading-6 text-muted">Live charts and asset snapshots will appear here after provider integration.</p>
-            </div>
-            <div className="mt-5 flex items-center gap-2 text-xs leading-6 text-muted">
-              <ShieldCheck size={16} className="shrink-0 text-accent" aria-hidden="true" />
-              No placeholder numbers are presented as real prices.
-            </div>
-          </div>
+          <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Market overview</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
+            Your cryptocurrency workspace, structured for clarity. Live prices and account data will appear after integration.
+          </p>
         </div>
+        <Button asChild><Link href="/markets">Explore markets <ArrowUpRight size={16} aria-hidden="true" /></Link></Button>
       </section>
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 md:py-24" id="capabilities">
-        <div className="mb-10 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Capabilities · planned</p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Everything essential. Nothing distracting.</h2>
-          <p className="mt-4 text-base leading-8 text-muted">These capabilities form the roadmap and will be implemented in independently testable phases.</p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {features.map(({ icon: Icon, title, description, tag }) => (
-            <article key={title} className="rounded-2xl border border-line bg-panel p-6 sm:p-7">
-              <div className="mb-7 flex items-center justify-between gap-3">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
-                  <Icon size={23} aria-hidden="true" />
+
+      <section aria-label="Market and portfolio summary" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+        {metrics.map(({ title, subtitle, icon: Icon }) => (
+          <Card key={title}>
+            <CardContent className="pt-5 sm:pt-6">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-medium text-muted-foreground">{title}</p>
+                <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                  <Icon size={17} aria-hidden="true" />
                 </span>
-                <span className="text-xs text-muted">{tag}</span>
               </div>
-              <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
-              <p className="mt-3 text-sm leading-7 text-muted">{description}</p>
-            </article>
-          ))}
-        </div>
+              <p className="mt-3 text-3xl font-semibold tracking-tight" aria-label={`${title}: unavailable`}>—</p>
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">{subtitle} · unavailable</p>
+            </CardContent>
+          </Card>
+        ))}
       </section>
-      <section className="border-t border-line bg-panel/35" id="roadmap">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 sm:px-8 md:py-24 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Build roadmap</p>
-            <h2 className="mt-3 max-w-md text-3xl font-semibold tracking-tight sm:text-4xl">Reliability is a feature.</h2>
-            <p className="mt-4 max-w-md text-sm leading-8 text-muted">Start with the framework, establish a verified market-data layer, then add authenticated watchlists and portfolio accounting.</p>
-            <a className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline" href="https://github.com/justinangeloperez327/next-crypto#roadmap" target="_blank" rel="noopener noreferrer">
-              Full implementation plan <ArrowUpRight size={15} aria-hidden="true" />
+
+      <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
+        <ChartPanel
+          title="Market trend"
+          description="Historical price series · USD"
+          status="empty"
+        />
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <CardTitle>My watchlist</CardTitle>
+                <CardDescription className="mt-1">Assets you want to follow</CardDescription>
+              </div>
+              <span className="flex size-9 items-center justify-center rounded-lg bg-muted text-muted-foreground"><Star size={18} aria-hidden="true" /></span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-xl border border-dashed border-border bg-background/50">
+              <DataState state="empty" compact title="No saved assets" description="Watchlists will become available when authenticated accounts are implemented." />
+            </div>
+            <Button asChild variant="outline" className="mt-5 w-full">
+              <Link href="/watchlist">View watchlist <ArrowRight size={15} aria-hidden="true" /></Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section aria-labelledby="assets-heading">
+        <Card>
+          <CardHeader className="flex-row flex-wrap items-start justify-between gap-4">
+            <div>
+              <CardTitle id="assets-heading">Asset explorer</CardTitle>
+              <CardDescription className="mt-1">
+                Static asset catalog preview · no live ranking, prices or percentage changes
+              </CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild><Link href="/markets">All markets <ArrowRight size={15} aria-hidden="true" /></Link></Button>
+          </CardHeader>
+          <CardContent className="pt-5">
+            <AssetTable compact />
+          </CardContent>
+        </Card>
+      </section>
+
+      <section aria-label="Connection roadmap" className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Data readiness</CardTitle>
+            <CardDescription className="mt-1">Visible milestones for a dependable market dashboard</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-3">
+            {[
+              { title: "Dashboard architecture", text: "Accessible shell, theme tokens and reusable components", ready: true },
+              { title: "Verified market API", text: "Server adapter, caching, data attribution and rate-limit recovery", ready: false },
+              { title: "Authenticated portfolio", text: "User accounts, stored transactions and performance analytics", ready: false },
+            ].map((item) => (
+              <div key={item.title} className="flex items-start gap-3">
+                <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                  {item.ready ? <CircleCheck size={18} className="text-primary" aria-hidden="true" /> : <RadioTower size={18} aria-hidden="true" />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium">{item.title}</p>
+                  <p className="mt-0.5 text-xs leading-5 text-muted-foreground">{item.text}</p>
+                </div>
+                <Badge variant={item.ready ? "default" : "outline"}>{item.ready ? "Ready" : "Planned"}</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card className="bg-accent/40">
+          <CardHeader>
+            <span className="mb-2 flex size-10 items-center justify-center rounded-xl border border-primary/20 bg-accent text-accent-foreground">
+              <ShieldCheck size={20} aria-hidden="true" />
+            </span>
+            <CardTitle>Built for transparency</CardTitle>
+            <CardDescription className="mt-2">No fake quotes, simulated growth or investment recommendations. Quotes will carry source and freshness information.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <a className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline" href="https://github.com/justinangeloperez327/next-crypto#roadmap" target="_blank" rel="noopener noreferrer">
+              Explore the roadmap <ArrowUpRight size={15} aria-hidden="true" />
               <span className="sr-only">(opens in a new tab)</span>
             </a>
-          </div>
-          <div className="divide-y divide-line overflow-hidden rounded-2xl border border-line bg-panel">
-            {[
-              { number: "01", name: "Foundation and design", status: "In progress", active: true },
-              { number: "02", name: "Market data and discovery", status: "Planned", active: false },
-              { number: "03", name: "Authentication and personal data", status: "Planned", active: false },
-              { number: "04", name: "Portfolio insights and release", status: "Planned", active: false },
-            ].map((step) => (
-              <div key={step.number} className="flex items-center gap-4 px-5 py-5 sm:px-7">
-                <span className="text-sm font-semibold tabular-nums text-accent">{step.number}</span>
-                <span className="flex-1 text-sm font-medium">{step.name}</span>
-                <span className={step.active ? "text-xs font-semibold text-accent" : "text-xs text-muted"}>{step.status}</span>
-                {step.active ? <CircleCheck size={17} className="text-accent" aria-label="Phase started" /> : <span className="h-[17px] w-[17px]" aria-hidden="true" />}
-              </div>
-            ))}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </section>
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8">
-        <div className="flex flex-col gap-10 rounded-3xl border border-line bg-panel p-7 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Designed around dependable data.</h2>
-            <p className="mt-2 max-w-xl text-sm leading-7 text-muted">Transparent sources, safe defaults and clearly labeled states before additional features.</p>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {principles.map((principle) => (
-              <div className="flex max-w-xs items-start gap-2 text-xs leading-6 text-muted" key={principle}>
-                <CircleCheck size={17} className="mt-1 shrink-0 text-accent" aria-hidden="true" />
-                <span>{principle}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }

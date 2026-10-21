@@ -1,25 +1,25 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { ThemeProvider } from "@/components/theme-provider";
+import { DashboardShell } from "@/components/dashboard-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Next-Crypto | Crypto market insights",
+    default: "Overview | Next-Crypto",
     template: "%s | Next-Crypto",
   },
-  description: "A transparent, non-custodial cryptocurrency market research and portfolio tracking project.",
+  description: "Non-custodial cryptocurrency market insights and portfolio tracking — in development.",
   applicationName: "Next-Crypto",
   icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider>
+          <DashboardShell>{children}</DashboardShell>
+        </ThemeProvider>
       </body>
     </html>
   );

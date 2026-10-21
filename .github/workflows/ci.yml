@@ -11,14 +11,16 @@ permissions:
 
 jobs:
   quality:
-    name: Lint, Typecheck and Build
+    name: Lint, Typecheck, Unit tests and Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Set up Node 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
       - name: Install dependencies
@@ -27,7 +29,29 @@ jobs:
         run: npm run lint
       - name: Typecheck
         run: npm run typecheck
+      - name: Unit and component tests
+        run: npm test
       - name: Production build
         run: npm run build
 
-# CI intentionally never deploys to Vercel.
+  browser:
+    name: Playwright smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Set up Node 24
+        uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run smoke tests
+        run: npm run test:e2e
+
+# Neither job deploys to Vercel. The GitHub Actions token is read-only.

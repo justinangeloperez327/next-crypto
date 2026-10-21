@@ -1,79 +1,96 @@
 # Next-Crypto
 
-A non-custodial cryptocurrency market research and portfolio tracking application built with Next.js App Router.
+A responsive, non-custodial cryptocurrency market workspace, built with Next.js App Router.
 
-> **Status:** Group 1 — foundation. Market feeds, accounts, and portfolio calculations are **not yet implemented**. Any previews are illustrative, not live prices or financial advice.
+**Group 2 implemented:** minimal dashboard shell, light/dark mode, mobile navigation, reusable shadcn-style UI primitives, search/sort/pagination tables, chart containers, accessible loading/error/empty states, unit/component tests and browser smoke tests.
 
-## Scope
+> **Important:** This is a UI-development preview, **not** a live cryptocurrency market data service. No crypto quotes, simulated price histories, authenticated user data, wallets, or trading are implemented yet.
 
-Initial MVP:
-- Explore cryptocurrency markets with trustworthy price, volume, and market-cap data.
-- Search coins, open detail pages, and study historical charts.
-- Save a personal watchlist.
-- Track holdings through manual buy, sell, deposit, and withdrawal transactions.
-- Review portfolio allocations and performance with explicit calculation methodology.
+## Technology
 
-Out of scope for MVP: exchange execution, private-key custody, on-chain transfers, investment recommendations, leveraged derivatives, automatic trading bots.
+- Next.js 16 App Router + React 19 + strict TypeScript
+- Node.js 24, Tailwind CSS 4, shadcn-style local UI components backed by Radix Primitives
+- `next-themes` for system-preference-aware, persisted light/dark theming
+- Vitest + React Testing Library, Playwright Chromium smoke tests
+- PostgreSQL + Prisma and Auth.js planned for later phases
 
-## Stack
+## Setup
 
-- Next.js 16 App Router, React 19, TypeScript strict mode
-- Node.js 24 LTS; Tailwind CSS 4; shadcn/ui-ready design tokens
-- PostgreSQL + Prisma and Auth.js in later phases
-- Zod validation; Vitest and Playwright planned for testing
-- Manual Vercel deployment only — no push-triggered production deployment
-
-## Local development
-
-Requirements: Node.js 24.x and npm.
+Requires Node.js 24.x and npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000.
-
-Other commands:
+Visit http://localhost:3000.
 
 ```bash
 npm run lint
 npm run typecheck
+npm test
 npm run build
+
+# browser tests
+npx playwright install chromium
+npm run test:e2e
 ```
 
-**Important:** This repository was initialized through the GitHub connector rather than `create-next-app`; dependency installation and the production build need to be verified in a network-enabled environment. Commit the generated `package-lock.json` after the initial installation, then migrate CI from `npm install` to `npm ci`.
+**Reproducible installation follow-up:** the scaffold currently does not include `package-lock.json`. Generate and commit it from a network-enabled checkout (`npm install --package-lock-only`), then switch the CI workflows from `npm install` to `npm ci`. Until then, the CI verifies compatible dependency ranges rather than a fully locked dependency tree.
+
+## Navigation
+
+| Route | UI | Data availability |
+| --- | --- | --- |
+| `/` | KPI cards, chart placeholder, watchlist empty state, asset preview | No live data |
+| `/markets` | Searchable/sortable catalog, chart container | Names/categories are static preview entries; quotes unavailable |
+| `/watchlist` | Personal watchlist empty state | Account storage not implemented |
+| `/portfolio` | Holdings, transaction and performance placeholders | Account storage not implemented |
+
+### Component architecture
+
+- `src/components/dashboard-shell.tsx` — responsive sidebar and main workspace
+- `src/components/theme-provider.tsx`, `theme-toggle.tsx` — theme persistence and toggle
+- `src/components/ui/*` — local, themeable shadcn-style component sources
+- `src/components/data-table.tsx` — generic searchable, sortable, paginated table
+- `src/components/chart-panel.tsx` — accessible chart/empty/loading/error wrapper
+- `src/components/data-state.tsx` — consistent accessible data states
+- `src/lib/market-preview.ts` — explicitly static asset catalog
+- `src/components/*.test.tsx` — interaction and accessibility contract tests
+- `e2e/dashboard.spec.ts` — browser smoke tests
+
+These UI primitives are versioned as source files, as in the shadcn/ui copy-to-project model. Configure or regenerate components carefully if running the shadcn CLI later.
 
 ## Roadmap
 
-| Group | Goal | Deliverables |
+| Group | Goal | Status |
 | --- | --- | --- |
-| 1 | Foundation | Next.js scaffold, strict TS, Tailwind, accessible starter UI, documentation, CI |
-| 2 | Design system | shadcn/ui integration, component primitives, navigation, responsive light/dark modes |
-| 3 | Market data | Server-side provider adapter, env configuration, caching, retries, rate-limit and stale-data handling |
-| 4 | Markets explorer | Search, sorting, pagination, gainers/losers and filters |
-| 5 | Coin details | Verified price history, charts, market metrics and source timestamps |
-| 6 | Authentication | Auth.js sessions, registration, login, protected routes, security boundaries |
-| 7 | Persistence | PostgreSQL, Prisma migrations, users, watchlists and portfolio schema |
-| 8 | Watchlists | Save coins, personalized views, robust optimistic updates |
-| 9 | Portfolio ledger | Manual entries, decimal-safe quantities and cost basis, fees, currency handling |
-| 10 | Analytics | Allocation, return calculations, chart history and downloadable exports |
-| 11 | Quality | Vitest, Playwright, a11y, security, resilience and performance budgets |
-| 12 | Release | CI hardening, operational documentation and manually initiated Vercel deployment |
+| 1 | Foundation: Next.js 16, TypeScript, Tailwind, CI | Complete |
+| 2 | UI: dashboard shell, themes, reusable tables/charts, states, tests | Complete |
+| 3 | Market provider adapter with provenance, cache, rate-limit handling | Planned |
+| 4 | Live market explorer, search and pagination | Planned |
+| 5 | Verified coin details and historical charts | Planned |
+| 6 | Authentication, sessions and security | Planned |
+| 7 | PostgreSQL, Prisma schema and persistence | Planned |
+| 8 | Personal watchlists | Planned |
+| 9 | Manual portfolio ledger, fees, safe decimal arithmetic | Planned |
+| 10 | Analytics, performance and exports | Planned |
+| 11 | Broad coverage: accessibility, security, reliability, performance | Planned |
+| 12 | Final audit and manual production release | Planned |
 
-### Data engineering principles
+### Data and safety principles
 
-- Never present mock values as live market data.
-- Store provider, currency, timestamp and freshness for displayed market quotes.
-- Centralize external API calls server-side. Never expose service credentials to browser code.
-- Treat provider failures and rate limits as expected states; show last-successful data clearly labelled.
-- Use decimal-safe storage for monetary amounts, and document cost-basis/return calculation rules.
-- No wallet private keys, recovery phrases, or exchange trading credentials in the MVP.
+- Never show mock financial values as live market prices.
+- Preserve provider, quote currency, source timestamp and data-freshness status.
+- Keep provider credentials server-only, with caching and rate-limit recovery.
+- Do not request or store wallet seed phrases or private keys.
+- Model transactions with decimal-safe amounts and well-defined return/cost-basis formulas.
+- Features must communicate when they are only planned or data is unavailable.
 
 ## Deployment
 
-GitHub Actions is for validation only; deployment to Vercel is a separate **manual** action. Do not add a production auto-deploy workflow or enable Vercel's automatic Git deployments without an explicit change in requirements.
+**Manual Vercel deployment only.** No CI job deploys to Vercel. A separate Vercel Git integration may still deploy automatically unless its auto-deployment behavior is disabled in Vercel project settings. CI uses `contents: read`.
 
-## Disclaimer
+## Notice
 
-Next-Crypto is for informational and personal portfolio tracking purposes. Crypto prices are volatile and third-party data may be delayed or inaccurate. This is not personalized investment advice.
+This project is for informational research and personal record-keeping. Crypto prices are volatile, external feeds can be delayed, and this is not investment advice.

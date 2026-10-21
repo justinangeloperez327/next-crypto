@@ -3,6 +3,7 @@
   "style": "new-york",
   "rsc": true,
   "tsx": true,
+  "iconLibrary": "lucide",
   "tailwind": {
     "css": "src/app/globals.css",
     "baseColor": "slate",
@@ -14,6 +15,5 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"
-  },
-  "iconLibrary": "lucide"
+  }
 }
