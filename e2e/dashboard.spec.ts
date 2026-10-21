@@ -12,12 +12,19 @@ test("overview and market navigation render without fabricated live quotes", asy
   await expect(page.getByRole("table", { name: "Asset catalog preview" }).getByText("Bitcoin")).toHaveCount(0);
 });
 
-test("theme toggle updates the root class", async ({ page }) => {
+test("theme toggle updates the root class and visible icon", async ({ page }) => {
   await page.goto("/");
   const root = page.locator("html");
   const isDark = await root.evaluate((element) => element.classList.contains("dark"));
-  await page.getByRole("button", { name: "Toggle color theme" }).click();
+  const toggle = page.getByRole("button", { name: "Toggle color theme" });
+  const sunIcon = toggle.locator("svg").first();
+  const moonIcon = toggle.locator("svg").last();
+  await expect(sunIcon).toHaveCSS("display", isDark ? "block" : "none");
+  await expect(moonIcon).toHaveCSS("display", isDark ? "none" : "block");
+  await toggle.click();
   await expect(root).toHaveClass(isDark ? /(^|\s)light(\s|$)/ : /(^|\s)dark(\s|$)/);
+  await expect(sunIcon).toHaveCSS("display", isDark ? "none" : "block");
+  await expect(moonIcon).toHaveCSS("display", isDark ? "block" : "none");
 });
 
 test("mobile navigation is keyboard and screen-reader accessible", async ({ page }) => {
