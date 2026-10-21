@@ -16,7 +16,7 @@ test("theme toggle updates the root class", async ({ page }) => {
   await page.goto("/");
   const root = page.locator("html");
   const isDark = await root.evaluate((element) => element.classList.contains("dark"));
-  await page.getByRole("button", { name: isDark ? "Switch to light mode" : "Switch to dark mode" }).click();
+  await page.getByRole("button", { name: "Toggle color theme" }).click();
   await expect(root).toHaveClass(isDark ? /(^|\s)light(\s|$)/ : /(^|\s)dark(\s|$)/);
 });
 

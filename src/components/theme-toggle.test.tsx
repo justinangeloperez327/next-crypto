@@ -11,7 +11,7 @@ vi.mock("next-themes", () => ({
 describe("ThemeToggle", () => {
   it("allows switching away from the resolved dark theme", async () => {
     render(<ThemeToggle />);
-    await userEvent.setup().click(await screen.findByRole("button", { name: "Switch to light mode" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Toggle color theme" }));
     expect(setTheme).toHaveBeenCalledWith("light");
   });
 });
