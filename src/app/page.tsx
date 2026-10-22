@@ -4,6 +4,7 @@ import {
   Layers3, RadioTower, ShieldCheck, Star, Wallet,
 } from "lucide-react";
 import { AssetTable } from "@/components/asset-table";
+import { MarketFeed } from "@/components/market-feed";
 import { ChartPanel } from "@/components/chart-panel";
 import { DataState } from "@/components/data-state";
 import { Badge } from "@/components/ui/badge";
@@ -23,12 +24,12 @@ export default function OverviewPage() {
       <section className="flex flex-wrap items-start justify-between gap-6">
         <div>
           <div className="mb-3 flex flex-wrap items-center gap-3">
-            <Badge variant="default"><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" /> Group 2 · UI preview</Badge>
-            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Clock3 size={14} aria-hidden="true" /> Market feed not connected</span>
+            <Badge variant="default"><span className="size-1.5 rounded-full bg-primary" aria-hidden="true" /> Group 3 · API integration</Badge>
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"><Clock3 size={14} aria-hidden="true" /> CoinGecko Demo key required for prices</span>
           </div>
           <h1 className="text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">Market overview</h1>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-            Your cryptocurrency workspace, structured for clarity. Live prices and account data will appear after integration.
+            Your cryptocurrency workspace, structured for clarity. Verified market snapshots appear below when CoinGecko is configured; account data remains unavailable.
           </p>
         </div>
         <Button asChild><Link href="/markets">Explore markets <ArrowUpRight size={16} aria-hidden="true" /></Link></Button>
@@ -49,6 +50,16 @@ export default function OverviewPage() {
             </CardContent>
           </Card>
         ))}
+      </section>
+
+      <section aria-labelledby="market-feed-heading">
+        <Card>
+          <CardHeader>
+            <CardTitle id="market-feed-heading">Latest market snapshot</CardTitle>
+            <CardDescription className="mt-1">CoinGecko · Top 20 market-cap assets · USD · provider timestamps and stale-data warnings</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-5"><MarketFeed compact /></CardContent>
+        </Card>
       </section>
 
       <section className="grid items-stretch gap-4 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,1fr)]">
@@ -84,7 +95,7 @@ export default function OverviewPage() {
             <div>
               <CardTitle id="assets-heading">Asset explorer</CardTitle>
               <CardDescription className="mt-1">
-                Static asset catalog preview · no live ranking, prices or percentage changes
+                Offline reference names only · not an ordered market ranking or a live quote table
               </CardDescription>
             </div>
             <Button variant="outline" size="sm" asChild><Link href="/markets">All markets <ArrowRight size={15} aria-hidden="true" /></Link></Button>
@@ -104,7 +115,7 @@ export default function OverviewPage() {
           <CardContent className="space-y-4 pt-3">
             {[
               { title: "Dashboard architecture", text: "Accessible shell, theme tokens and reusable components", ready: true },
-              { title: "Verified market API", text: "Server adapter, caching, data attribution and rate-limit recovery", ready: false },
+              { title: "Verified market API", text: "Server adapter, caching, attribution and bounded stale fallback (key required)", ready: true },
               { title: "Authenticated portfolio", text: "User accounts, stored transactions and performance analytics", ready: false },
             ].map((item) => (
               <div key={item.title} className="flex items-start gap-3">

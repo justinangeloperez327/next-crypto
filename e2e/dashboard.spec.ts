@@ -38,3 +38,48 @@ test("mobile navigation is keyboard and screen-reader accessible", async ({ page
   await expect(page.getByRole("heading", { name: "Portfolio tracker" })).toBeVisible();
   await expect(dialog).toHaveCount(0);
 });
+
+test("verified feed renders real source values without displaying a fabricated chart", async ({ page }) => {
+  await page.route("**/api/markets", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        status: "fresh",
+        snapshot: {
+          provider: "CoinGecko",
+          currency: "USD",
+          fetchedAt: "2026-10-22T08:00:00.000Z",
+          assets: [{
+            id: "bitcoin", symbol: "BTC", name: "Bitcoin", rank: 1,
+            priceUsd: 45678.12, marketCapUsd: 900000000000, volume24hUsd: 35000000000,
+            change24hPercent: 2.5, sourceUpdatedAt: "2026-10-22T07:59:00.000Z",
+          }],
+        },
+      }),
+    });
+  });
+  await page.goto("/markets");
+  const feed = page.getByRole("region", { name: "CoinGecko market feed" });
+  await expect(feed.getByText("Market feed connected")).toBeVisible();
+  const table = feed.getByRole("table", { name: "CoinGecko market prices" });
+  await expect(table.getByText("Bitcoin")).toBeVisible();
+  await expect(table.getByText("$45,678.12")).toBeVisible();
+  await expect(feed.getByRole("link", { name: /Data by CoinGecko/ })).toBeVisible();
+  await expect(page.getByText("No prices or simulated chart series are shown.")).toBeVisible();
+});
+
+test("throttled provider responses are communicated instead of showing pretend values", async ({ page }) => {
+  await page.route("**/api/markets", async (route) => {
+    await route.fulfill({
+      status: 429,
+      contentType: "application/json",
+      body: JSON.stringify({ status: "unavailable", reason: "rate_limited", retryAfterSeconds: 60 }),
+    });
+  });
+  await page.goto("/markets");
+  const feed = page.getByRole("region", { name: "CoinGecko market feed" });
+  await expect(feed.getByRole("alert")).toContainText("Market data unavailable");
+  await expect(feed.getByText("Retry in approximately 60 seconds.")).toBeVisible();
+  await expect(feed.getByRole("table", { name: "CoinGecko market prices" })).toHaveCount(0);
+});
