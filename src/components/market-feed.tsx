@@ -48,6 +48,26 @@ const reasons: Record<string, string> = {
   timeout: "The provider did not respond before the request timeout.",
 };
 
+/** Shared request parser for initial mount and explicit user refresh. */
+async function requestMarket(signal?: AbortSignal): Promise<MarketResult> {
+  const response = await fetch("/api/markets", { signal, cache: "no-store" });
+  const payload: unknown = await response.json();
+  if (!payload || typeof payload !== "object" || !("status" in payload)) {
+    throw new Error("Invalid API response");
+  }
+  const data = payload as MarketResult;
+  if (data.status !== "unavailable" && data.status !== "fresh" && data.status !== "stale") {
+    throw new Error("Invalid API status");
+  }
+  if (data.status !== "unavailable" && (!data.snapshot || !Array.isArray(data.snapshot.assets))) {
+    throw new Error("Invalid market snapshot");
+  }
+  if (!response.ok && data.status !== "unavailable") {
+    throw new Error("Unexpected API failure");
+  }
+  return data;
+}
+
 export function MarketFeed({ compact = false }: { compact?: boolean }) {
   const [result, setResult] = React.useState<MarketResult | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -55,14 +75,8 @@ export function MarketFeed({ compact = false }: { compact?: boolean }) {
 
   const load = React.useCallback(async (signal?: AbortSignal) => {
     try {
-      const response = await fetch("/api/markets", { signal, cache: "no-store" });
-      const payload: unknown = await response.json();
-      if (!payload || typeof payload !== "object" || !("status" in payload)) throw new Error("Invalid API response");
-      const data = payload as MarketResult;
-      if (data.status !== "unavailable" && data.status !== "fresh" && data.status !== "stale") throw new Error("Invalid API status");
-      if (data.status !== "unavailable" && (!data.snapshot || !Array.isArray(data.snapshot.assets))) throw new Error("Invalid snapshot");
-      if (!response.ok && data.status !== "unavailable") throw new Error("Unexpected API failure");
-      setResult(data);
+      const data = await requestMarket(signal);
+      if (!signal?.aborted) setResult(data);
     } catch (error) {
       if (signal?.aborted || (error instanceof Error && error.name === "AbortError")) return;
       setNetworkError(true);
@@ -74,9 +88,23 @@ export function MarketFeed({ compact = false }: { compact?: boolean }) {
 
   React.useEffect(() => {
     const controller = new AbortController();
-    void load(controller.signal);
+    void requestMarket(controller.signal).then(
+      (data) => {
+        if (!controller.signal.aborted) {
+          setResult(data);
+          setLoading(false);
+        }
+      },
+      () => {
+        if (!controller.signal.aborted) {
+          setResult(null);
+          setNetworkError(true);
+          setLoading(false);
+        }
+      },
+    );
     return () => controller.abort();
-  }, [load]);
+  }, []);
 
   const snapshot = result && result.status !== "unavailable" ? result.snapshot : null;
   const stale = result?.status === "stale";
