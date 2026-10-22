@@ -54,8 +54,6 @@ export function MarketFeed({ compact = false }: { compact?: boolean }) {
   const [networkError, setNetworkError] = React.useState(false);
 
   const load = React.useCallback(async (signal?: AbortSignal) => {
-    setLoading(true);
-    setNetworkError(false);
     try {
       const response = await fetch("/api/markets", { signal, cache: "no-store" });
       const payload: unknown = await response.json();
@@ -96,7 +94,7 @@ export function MarketFeed({ compact = false }: { compact?: boolean }) {
           </Badge>
           {snapshot && <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Clock3 size={13} aria-hidden="true" />Fetched <time dateTime={snapshot.fetchedAt}>{new Date(snapshot.fetchedAt).toLocaleString()}</time></span>}
         </div>
-        <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => void load()}>
+        <Button type="button" variant="outline" size="sm" disabled={loading} onClick={() => { setLoading(true); setNetworkError(false); void load(); }}>
           <RefreshCw size={14} aria-hidden="true" /> Refresh feed
         </Button>
       </div>
